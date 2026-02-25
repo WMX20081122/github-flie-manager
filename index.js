@@ -406,6 +406,9 @@ async function uploadFile(request, env, pathConfig) {
     const basePath = pathConfig.path || '';
     const filePath = basePath ? `${basePath}/${filename}` : filename;
     
+    // 正确编码文件路径
+    const encodedFilePath = encodeURIComponent(filePath);
+    
     // 读取文件内容并编码为Base64
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
@@ -416,7 +419,7 @@ async function uploadFile(request, env, pathConfig) {
     const content = btoa(binaryString);
     
     // 检查文件是否已存在
-    const checkUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`;
+    const checkUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodedFilePath}`;
     const checkResponse = await fetch(checkUrl, {
       headers: {
         'Authorization': `token ${GITHUB_TOKEN}`,
@@ -432,7 +435,7 @@ async function uploadFile(request, env, pathConfig) {
     }
     
     // 上传文件
-    const uploadUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`;
+    const uploadUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodedFilePath}`;
     const uploadData = {
       message: `Upload file: ${filename}`,
       content: content,
@@ -497,9 +500,11 @@ async function deleteFile(request, env, pathConfig) {
     
     // 构建完整的文件路径
     const basePath = pathConfig.path || '';
-    const filePath = basePath ? `${basePath}/${filename}` : filename;
+    const filePath = basePath ? basePath + '/' + filename : filename;
     
-    const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`;
+    // 正确编码文件路径
+    const encodedFilePath = encodeURIComponent(filePath);
+    const url = 'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + encodedFilePath;
     
     const deleteData = {
       message: `Delete file: ${filename}`,
@@ -1090,7 +1095,7 @@ function getFileManagerHTML(currentPathConfig, allPathConfigs, env) {
                     formData.append('filename', finalFilename);
                     
                     // 使用fetch API上传文件，模拟进度条
-                    const response = await fetch('${apiBase}', {
+                        const response = await fetch('${apiBase}', {
                         method: 'POST',
                         body: formData
                     });
