@@ -769,55 +769,100 @@ function getPathSelectionHTML(pathConfigs) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitHub文件管理器 - 选择路径</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
-        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
-        .header { background: #2c3e50; color: white; padding: 30px; border-radius: 8px; margin-bottom: 30px; text-align: center; position: relative; }
-        .logout-btn { position: absolute; top: 20px; right: 20px; background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; text-decoration: none; }
-        .logout-btn:hover { background: #c0392b; }
-        .path-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .path-card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; transition: transform 0.2s; }
-        .path-card:hover { transform: translateY(-5px); }
-        .path-card h3 { margin-bottom: 15px; color: #2c3e50; }
-        .path-card p { color: #7f8c8d; margin-bottom: 20px; }
-        .btn { background: #3498db; color: white; border: none; padding: 12px 25px; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
-        .btn:hover { background: #2980b9; }
+        body { 
+            font-family: 'ZCOOL XiaoWei', sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+            min-height: 100vh;
+            background-color: #fce4ec;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .header { 
+            background: linear-gradient(135deg, #e91e63 0%, #f06292 100%); 
+            color: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            margin-bottom: 20px; 
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+        }
+        .header h1 { font-family: 'Ma Shan Zheng', cursive; font-size: 1.5rem; margin-bottom: 5px; }
+        .header p { font-size: 0.9rem; opacity: 0.9; }
+        .path-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+        .path-card { 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(10px);
+            padding: 15px 12px; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 10px rgba(233, 30, 99, 0.1); 
+            text-align: center; 
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .path-card:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.2);
+        }
+        .path-card h3 { margin-bottom: 8px; color: #e91e63; font-size: 0.95rem; }
+        .path-card p { color: #888; margin-bottom: 12px; font-size: 0.75rem; }
+        .btn { 
+            background: linear-gradient(135deg, #e91e63 0%, #f06292 100%); 
+            color: white; 
+            border: none; 
+            padding: 8px 16px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            text-decoration: none; 
+            display: inline-block;
+            font-size: 0.85rem;
+        }
+        .btn:hover { box-shadow: 0 2px 10px rgba(233, 30, 99, 0.4); }
+        
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .header { padding: 15px; }
+            .header h1 { font-size: 1.2rem; }
+            .path-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; }
+            .path-card { padding: 10px 8px; }
+            .path-card h3 { font-size: 0.85rem; margin-bottom: 5px; }
+            .path-card p { font-size: 0.7rem; margin-bottom: 8px; }
+            .btn { padding: 6px 12px; font-size: 0.8rem; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>GitHub文件管理器</h1>
+            <h1>🌸 GitHub文件管理器</h1>
             <p>请选择要管理的文件夹路径</p>
-            <button class="logout-btn" onclick="logout()">登出</button>
         </div>
         
         <div class="path-grid">
             ${pathConfigs.map(config => `
                 <div class="path-card">
-                    <h3>${config.displayName}</h3>
-                    <p>路径: ${config.path || '根目录'}</p>
-                    <a href="/${config.name}" class="btn">进入管理</a>
+                    <h3>📁 ${config.displayName}</h3>
+                    <a href="/${config.name}" class="btn">进入</a>
                 </div>
             `).join('')}
         </div>
     </div>
     
     <script>
-        // 登出函数
-        function logout() {
-            if (confirm('确定要登出吗？')) {
-                fetch('/api/logout', {
-                    method: 'POST'
-                }).then(() => {
-                    window.location.href = '/login';
-                }).catch(error => {
-                    console.error('登出失败:', error);
-                    window.location.href = '/login';
-                });
-            }
-        }
+        // 随机背景图片
+        var bgImages = [
+            'https://mc-verify-quiz.pages.dev/images/bg-1.jpg',
+            'https://mc-verify-quiz.pages.dev/images/bg-2.jpg',
+            'https://mc-verify-quiz.pages.dev/images/bg-3.jpg'
+        ];
+        var randomBg = bgImages[Math.floor(Math.random() * bgImages.length)];
+        document.body.style.backgroundImage = 'url(' + randomBg + ')';
     </script>
 </body>
 </html>`;
@@ -846,36 +891,84 @@ function getEditFileHTML(filename, sha, filePath, env) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>编辑文件 - ${filename}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
+        body { 
+            font-family: 'ZCOOL XiaoWei', sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+            min-height: 100vh;
+            background-color: #fce4ec;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
         .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
-        .header { background: #2c3e50; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; position: relative; }
-        .back-btn { position: absolute; top: 20px; left: 20px; background: #95a5a6; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; text-decoration: none; }
-        .back-btn:hover { background: #7f8c8d; }
-        .edit-section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .btn { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 5px; }
-        .btn:hover { background: #2980b9; }
-        .btn-success { background: #27ae60; }
-        .btn-success:hover { background: #229954; }
-        .btn-warning { background: #f39c12; }
-        .btn-warning:hover { background: #e67e22; }
+        .header { 
+            background: linear-gradient(135deg, #e91e63 0%, #f06292 100%); 
+            color: white; 
+            padding: 20px; 
+            border-radius: 16px; 
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+        }
+        .header h1 { font-family: 'Ma Shan Zheng', cursive; text-align: center; margin: 0; }
+        .back-btn { 
+            background: rgba(255,255,255,0.2); 
+            color: white; 
+            border: none; 
+            padding: 8px 16px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.3); }
+        .edit-section { 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(10px);
+            padding: 20px; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.1);
+        }
+        .btn { 
+            background: linear-gradient(135deg, #e91e63 0%, #f06292 100%); 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            margin: 5px;
+        }
+        .btn:hover { box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4); }
+        .btn-success { background: linear-gradient(135deg, #4caf50 0%, #81c784 100%); }
+        .btn-warning { background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%); }
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="text"], textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #e91e63; }
+        input[type="text"], textarea { 
+            width: 100%; 
+            padding: 10px; 
+            border: 2px solid #f8bbd9; 
+            border-radius: 10px; 
+            font-family: inherit;
+        }
         textarea { font-family: monospace; height: 400px; resize: vertical; }
-        .message { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .message { padding: 10px; margin: 10px 0; border-radius: 10px; }
         .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
         .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
-        .loading { display: none; text-align: center; margin: 20px 0; }
+        .loading { display: none; text-align: center; margin: 20px 0; color: #e91e63; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <button class="back-btn" onclick="goBack()">← 返回</button>
-            <h1 style="text-align: center; margin: 0;">编辑文件: ${filename}</h1>
+            <h1>✏️ 编辑文件: ${filename}</h1>
         </div>
         
         <div class="edit-section">
@@ -987,6 +1080,17 @@ function getEditFileHTML(filename, sha, filePath, env) {
         function goBack() {
             window.history.back();
         }
+        
+        // 随机背景图片
+        (function() {
+            var bgImages = [
+                'https://mc-verify-quiz.pages.dev/images/bg-1.jpg',
+                'https://mc-verify-quiz.pages.dev/images/bg-2.jpg',
+                'https://mc-verify-quiz.pages.dev/images/bg-3.jpg'
+            ];
+            var randomBg = bgImages[Math.floor(Math.random() * bgImages.length)];
+            document.body.style.backgroundImage = 'url(' + randomBg + ')';
+        })();
     </script>
 </body>
 </html>
@@ -1005,15 +1109,18 @@ function getFileManagerHTML(currentPathConfig, allPathConfigs, env) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
     <script>
         // 从后端传递的环境变量
-        const GITHUB_OWNER = '${GITHUB_OWNER}';
-        const GITHUB_REPO = '${GITHUB_REPO}';
-        const GITHUB_BRANCH = '${GITHUB_BRANCH}';
+        var GITHUB_OWNER = '${GITHUB_OWNER}';
+        var GITHUB_REPO = '${GITHUB_REPO}';
+        var GITHUB_BRANCH = '${GITHUB_BRANCH}';
         
         // 检测文件类型是否支持预览
         function isPreviewableFile(filename) {
-            const previewableExtensions = [
+            var previewableExtensions = [
                 // 图片文件
                 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg',
                 // 文档文件
@@ -1104,47 +1211,166 @@ function getFileManagerHTML(currentPathConfig, allPathConfigs, env) {
     </script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .header { background: #2c3e50; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; position: relative; }
-        .logout-btn { position: absolute; top: 20px; right: 20px; background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; text-decoration: none; }
-        .logout-btn:hover { background: #c0392b; }
-        .upload-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .file-list { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .btn { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 5px; }
-        .btn:hover { background: #2980b9; }
-        .btn-danger { background: #e74c3c; }
-        .btn-danger:hover { background: #c0392b; }
-        .btn-success { background: #27ae60; }
-        .btn-success:hover { background: #229954; }
-        input[type="file"] { margin: 10px 0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background: #f8f9fa; font-weight: bold; }
-        .message { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        body { 
+            font-family: 'ZCOOL XiaoWei', sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+            min-height: 100vh;
+            background-color: #fce4ec;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        
+        /* 电脑端：极简垂直导航栏 */
+        .sidebar {
+            width: 60px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 10px 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 100;
+            border-right: 1px solid rgba(233, 30, 99, 0.1);
+        }
+        
+        .sidebar-logo {
+            font-size: 20px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(233, 30, 99, 0.1);
+        }
+        
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            overflow-y: auto;
+        }
+        
+        .nav-item {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #888;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(233, 30, 99, 0.1);
+            color: #e91e63;
+        }
+        
+        .nav-item.active {
+            background: #e91e63;
+            color: white;
+        }
+        
+        .nav-icon {
+            font-size: 18px;
+            line-height: 1;
+        }
+        
+        .nav-label {
+            font-size: 9px;
+            margin-top: 2px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 45px;
+        }
+        
+        .main-content {
+            margin-left: 60px;
+            padding: 15px;
+            min-height: 100vh;
+        }
+        
+        .container { max-width: 100%; }
+        .header { 
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            color: #e91e63; 
+            padding: 15px 20px; 
+            border-radius: 12px; 
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(233, 30, 99, 0.1);
+        }
+        .header h1 { font-family: 'Ma Shan Zheng', cursive; margin-bottom: 3px; font-size: 1.3rem; }
+        .header p { font-size: 0.85rem; opacity: 0.8; }
+        .upload-section { 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(10px);
+            padding: 15px; 
+            border-radius: 12px; 
+            margin-bottom: 15px; 
+            box-shadow: 0 2px 10px rgba(233, 30, 99, 0.1);
+        }
+        .file-list { 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(10px);
+            padding: 15px; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 10px rgba(233, 30, 99, 0.1);
+        }
+        .btn { 
+            background: linear-gradient(135deg, #e91e63 0%, #f06292 100%); 
+            color: white; 
+            border: none; 
+            padding: 8px 15px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin: 3px;
+            font-size: 0.9rem;
+        }
+        .btn:hover { box-shadow: 0 2px 10px rgba(233, 30, 99, 0.3); }
+        .btn-danger { background: linear-gradient(135deg, #f44336 0%, #e57373 100%); }
+        .btn-success { background: linear-gradient(135deg, #4caf50 0%, #81c784 100%); }
+        input[type="file"] { margin: 8px 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid rgba(233, 30, 99, 0.1); }
+        th { background: rgba(252, 228, 236, 0.5); font-weight: bold; color: #e91e63; font-size: 0.9rem; }
+        .message { padding: 8px; margin: 8px 0; border-radius: 8px; font-size: 0.9rem; }
         .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
         .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
-        .loading { display: none; text-align: center; margin: 20px 0; }
+        .loading { display: none; text-align: center; margin: 15px 0; color: #e91e63; }
         
         /* 上传进度样式 */
         .file-progress {
-            margin: 10px 0;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: white;
+            margin: 8px 0;
+            padding: 8px;
+            border: 1px solid rgba(233, 30, 99, 0.2);
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.9);
         }
         
         .file-info {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
         }
         
         .filename {
             font-weight: bold;
             color: #333;
+            font-size: 0.9rem;
         }
         
         .file-size {
@@ -1196,8 +1422,69 @@ function getFileManagerHTML(currentPathConfig, allPathConfigs, env) {
         .status.uploading { background-color: #d1ecf1; color: #0c5460; }
         .status.success { background-color: #d4edda; color: #155724; }
         .status.error { background-color: #f8d7da; color: #721c24; }
-        .path-nav { margin-top: 15px; }
-        .path-nav .btn { background: #95a5a6; margin: 0 5px; }
+        
+        /* 手机端：横向导航栏 */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: auto;
+                flex-direction: column;
+                padding: 5px;
+                border-right: none;
+                border-bottom: 1px solid rgba(233, 30, 99, 0.1);
+            }
+            
+            .sidebar-logo { display: none; }
+            
+            .sidebar-nav {
+                flex-direction: row;
+                flex: none;
+                gap: 2px;
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+                overflow-x: auto;
+                overflow-y: hidden;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+                padding: 2px 0;
+            }
+            
+            .sidebar-nav::-webkit-scrollbar { display: none; }
+            
+            .nav-item {
+                width: auto;
+                height: auto;
+                padding: 3px 6px;
+                flex-direction: column;
+                gap: 1px;
+                flex-shrink: 0;
+                min-width: 40px;
+            }
+            
+            .nav-icon { font-size: 14px; }
+            .nav-label { font-size: 7px; margin-top: 1px; }
+            
+            .main-content {
+                margin-left: 0;
+                margin-top: 45px;
+                padding: 8px;
+            }
+            
+            .header { padding: 8px 12px; }
+            .header h1 { font-size: 1rem; }
+            .header p { font-size: 0.8rem; }
+            .upload-section, .file-list { padding: 8px; }
+            th, td { padding: 6px; font-size: 0.8rem; }
+            .btn { padding: 5px 10px; font-size: 0.8rem; margin: 2px; }
+            input[type="text"] { max-width: 100% !important; }
+            .filename-cell { max-width: 100px; }
+        }
         
         /* 编辑模态框样式 */
         .modal-overlay {
@@ -1281,108 +1568,64 @@ function getFileManagerHTML(currentPathConfig, allPathConfigs, env) {
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-        
-        /* 移动端响应式设计 */
-        @media (max-width: 768px) {
-            .container { padding: 10px; }
-            .header { padding: 15px; }
-            .header h1 { font-size: 1.5rem; margin-bottom: 10px; }
-            .path-nav { flex-direction: column; gap: 5px; }
-            .path-nav .btn { 
-                width: 100%; 
-                text-align: center; 
-                padding: 10px; 
-                font-size: 0.9rem;
-                margin: 2px 0;
-            }
-            .upload-section input[type="text"] { width: 100%; max-width: 300px; }
-            .file-list { grid-template-columns: 1fr; }
-            .file-item { padding: 8px; }
-            .file-actions { flex-direction: column; gap: 5px; }
-            .file-actions .btn { width: 100%; margin: 2px 0; }
-            
-            /* 移动端表格优化 */
-            table { font-size: 0.9rem; }
-            th, td { padding: 8px; }
-            .filename-cell { 
-                max-width: 150px; 
-                word-wrap: break-word;
-                white-space: normal;
-                line-height: 1.3;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .header h1 { font-size: 1.3rem; }
-            .header p { font-size: 0.9rem; }
-            .path-nav .btn { font-size: 0.85rem; padding: 8px; }
-            .btn { padding: 8px 16px; font-size: 0.9rem; }
-            .file-item { flex-direction: column; align-items: flex-start; }
-            .file-info { width: 100%; margin-bottom: 8px; }
-            .file-actions { width: 100%; }
-            
-            /* 超小屏幕表格优化 */
-            table { font-size: 0.8rem; }
-            th, td { padding: 6px; }
-            .filename-cell { 
-                max-width: 100px; 
-                word-wrap: break-word;
-                white-space: normal;
-                line-height: 1.2;
-                font-size: 0.85rem;
-            }
-            
-            /* 操作按钮优化 */
-            .file-actions .btn { 
-                font-size: 0.8rem; 
-                padding: 6px 12px; 
-                margin: 1px 0;
+    </style>
+</head>
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- 极简垂直导航栏 -->
+    <nav class="sidebar">
+        <div class="sidebar-logo">📁</div>
+        <div class="sidebar-nav">
+            <a href="/" class="nav-item" title="首页">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">首页</span>
+            </a>
+            ${allPathConfigs.map(config => `
+                <a href="/${config.name}" class="nav-item ${currentPathConfig.name === config.name ? 'active' : ''}" title="${config.displayName}">
+                    <span class="nav-icon">${currentPathConfig.name === config.name ? '📁' : '📂'}</span>
+                    <span class="nav-label">${config.displayName.length > 2 ? config.displayName.substring(0, 2) : config.displayName}</span>
+                </a>
+            `).join('')}
+        </div>
+    </nav>
+    
+    <!-- 主内容区 -->
+    <main class="main-content">
         <div class="header">
-            <h1>${title}</h1>
-            <p>通过Cloudflare Worker管理GitHub仓库文件</p>
-            <button class="logout-btn" onclick="logout()">登出</button>
-            <div class="path-nav">
-                <a href="/" class="btn">返回路径选择</a>
-                ${allPathConfigs.map(config => `
-                    <a href="/${config.name}" class="btn ${currentPathConfig.name === config.name ? 'active' : ''}">
-                        ${config.displayName}
-                    </a>
-                `).join('')}
-            </div>
+            <h1>🌸 ${currentPathConfig.displayName}</h1>
+            <p>管理 GitHub 仓库文件</p>
         </div>
         
         <div class="upload-section">
-            <h2>上传文件</h2>
-            <input type="file" id="fileInput" accept="*/*" multiple>
-            <input type="text" id="filenameInput" placeholder="自定义文件名（可选）" style="width: 300px; padding: 8px; margin: 10px 0;">
-            <button class="btn btn-success" onclick="uploadFiles()">上传文件</button>
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
+                <input type="file" id="fileInput" accept="*/*" multiple style="flex: 1; min-width: 150px;">
+                <input type="text" id="filenameInput" placeholder="自定义文件名" style="flex: 1; min-width: 120px; max-width: 200px; padding: 6px;">
+                <button class="btn btn-success" onclick="uploadFiles()">📤 上传</button>
+            </div>
             
             <!-- 已选择文件列表 -->
-            <div id="selectedFiles" style="margin-top: 15px; display: none;">
-                <h4>已选择文件 (<span id="fileCount">0</span>个)</h4>
-                <div style="margin-bottom: 10px;">
-                    <input type="text" id="fileFilter" placeholder="筛选文件名..." style="width: 300px; padding: 6px; margin-right: 10px;">
-                    <button class="btn" onclick="clearSelectedFiles()" style="padding: 6px 12px;">清空列表</button>
+            <div id="selectedFiles" style="margin-top: 10px; display: none;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <span style="font-size: 0.9rem;">已选 <span id="fileCount">0</span> 个</span>
+                    <input type="text" id="fileFilter" placeholder="筛选..." style="flex: 1; max-width: 150px; padding: 4px 8px;">
+                    <button class="btn" onclick="clearSelectedFiles()" style="padding: 4px 10px; font-size: 0.85rem;">清空</button>
                 </div>
-                <div id="fileList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 10px;"></div>
+                <div id="fileList" style="max-height: 150px; overflow-y: auto; border: 1px solid rgba(233, 30, 99, 0.2); border-radius: 8px; padding: 8px; font-size: 0.85rem;"></div>
             </div>
             
             <div id="uploadProgress" style="margin-top: 10px; display: none;"></div>
         </div>
         
         <div class="file-list">
-            <h2>文件列表</h2>
-            <div style="margin-bottom: 15px;">
-                <button class="btn" onclick="loadFiles()">刷新列表</button>
-                <button class="btn btn-success" onclick="batchDownloadFiles()" id="batchDownloadBtn" style="display: none;">批量下载选中文件</button>
-                <button class="btn btn-danger" onclick="batchDeleteFiles()" id="batchDeleteBtn" style="display: none;">批量删除选中文件</button>
-                <span id="selectedCount" style="margin-left: 10px; color: #666; display: none;">已选择 <span id="count">0</span> 个文件</span>
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px;">
+                <h2 style="margin: 0; font-size: 1rem;">文件列表</h2>
+                <button class="btn" onclick="loadFiles()">🔄 刷新</button>
+                <button class="btn btn-success" onclick="batchDownloadFiles()" id="batchDownloadBtn" style="display: none;">⬇️ 批量下载</button>
+                <button class="btn btn-danger" onclick="batchDeleteFiles()" id="batchDeleteBtn" style="display: none;">🗑️ 批量删除</button>
+                <span id="selectedCount" style="font-size: 0.85rem; color: #888; display: none;">已选 <span id="count">0</span> 个</span>
             </div>
             <div id="message"></div>
             <div class="loading" id="loading">加载中...</div>
@@ -1398,7 +1641,7 @@ function getFileManagerHTML(currentPathConfig, allPathConfigs, env) {
                 <tbody id="fileTableBody"></tbody>
             </table>
         </div>
-    </div>
+    </main>
 
     <script>
         // HTML转义函数
@@ -1974,6 +2217,17 @@ function getFileManagerHTML(currentPathConfig, allPathConfigs, env) {
                 filterSelectedFiles();
             });
         });
+        
+        // 随机背景图片
+        (function() {
+            var bgImages = [
+                'https://mc-verify-quiz.pages.dev/images/bg-1.jpg',
+                'https://mc-verify-quiz.pages.dev/images/bg-2.jpg',
+                'https://mc-verify-quiz.pages.dev/images/bg-3.jpg'
+            ];
+            var randomBg = bgImages[Math.floor(Math.random() * bgImages.length)];
+            document.body.style.backgroundImage = 'url(' + randomBg + ')';
+        })();
     </script>
 </body>
 </html>`;
